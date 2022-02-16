@@ -51,13 +51,54 @@
   const templates = {
     menuProduct: Handlebars.compile(document.querySelector(select.templateOf.menuProduct).innerHTML),
   };
-class Product{
-  constructor(id, data){
-    const thisProduct = this;
+  class Product{
+    constructor(id, data){
+      const thisProduct = this;
 
-    console.log('new Product:', thisProduct);
+      thisProduct.id = id;
+      thisProduct.data = data;
+
+      thisProduct.renderInMenu();
+      thisProduct.initAccordion();
+
+      console.log('new Product:', thisProduct);
+    }
+    renderInMenu(){
+      const thisProduct = this;
+      /*generate HTML based on template*/
+      const generateHTML = templates.menuProduct(thisProduct.data);
+      /*create element using utils.createElementFromHTML*/
+      thisProduct.element = utils.createDOMFromHTML(generateHTML);
+      /*find menu container*/
+      const menuContainer = document.querySelector(select.containerOf.menu);
+      /*add element to menu*/
+      menuContainer.appendChild(thisProduct.element);
+    }
+    initAccordion(){
+      const thisProduct = this;
+  
+      /* find the clickable trigger (the element that should react to clicking) */
+      const clickableTrigger = document.querySelector('.product__header');
+      /* START: add event listener to clickable trigger on event click */
+      clickableTrigger.addEventListener('click', function(event) {
+        console.log('clicked');
+        /* prevent default action for event */
+        event.preventDefault();
+  
+        /* find active product (product that has active class) */
+        const activeProduct = document.querySelectorAll('#product-list > .product.active')
+
+        /* if there is active product and it's not thisProduct.element, remove class active from it
+        Zanim schowasz aktywny produkt, sprawdź, czy nie jest on czasem równy thisProduct.element*/
+        if (activeProduct != thisProduct.element) {
+          activeProduct.classList.remove('active');
+        }
+        /* toggle active class on thisProduct.element */
+        thisProduct.element.classList.toggle('active');
+      });
+  
+    }
   }
-}
   const app = {
     initMenu: function(){
       const thisApp = this;
@@ -78,12 +119,12 @@ class Product{
       thisApp.initData();
       thisApp.initMenu();
     },
+    initData: function(){
+      const thisApp = this;
+  
+      thisApp.data = dataSource;
+    }
   };
-  initData: function(){
-    const thisApp = this;
-
-    thisApp.data = dataSource;
-  }
 
   app.init();
 }
