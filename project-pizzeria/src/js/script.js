@@ -59,7 +59,7 @@
       thisProduct.data = data;
 
       thisProduct.renderInMenu();
-      thisProduct.getElements(;)
+      thisProduct.getElements();
       thisProduct.initAccordion();
 
       console.log('new Product:', thisProduct);
@@ -88,7 +88,7 @@
       const thisProduct = this;
   
       /* find the clickable trigger (the element that should react to clicking) */
-      const clickableTrigger = document.querySelector('.product__header');
+      const clickableTrigger = thisProduct.element.querySelector('.product__header');
       /* START: add event listener to clickable trigger on event click */
       clickableTrigger.addEventListener('click', function(event) {
         console.log('clicked');
@@ -96,11 +96,11 @@
         event.preventDefault();
   
         /* find active product (product that has active class) */
-        const activeProduct = document.querySelectorAll('#product-list > .product.active')
+        const activeProduct = document.querySelector('#product-list > .product.active');
 
         /* if there is active product and it's not thisProduct.element, remove class active from it
         Zanim schowasz aktywny produkt, sprawdź, czy nie jest on czasem równy thisProduct.element*/
-        if (activeProduct != thisProduct.element) {
+        if (activeProduct && activeProduct != thisProduct.element) {
           activeProduct.classList.remove('active');
         }
         /* toggle active class on thisProduct.element */
