@@ -51,6 +51,7 @@
   const templates = {
     menuProduct: Handlebars.compile(document.querySelector(select.templateOf.menuProduct).innerHTML),
   };
+
   class Product{
     constructor(id, data){
       const thisProduct = this;
@@ -62,7 +63,9 @@
       thisProduct.getElements();
       thisProduct.initAccordion();
       thisProduct.initOrderForm();
-      //thisProduct.processOrder();
+      thisProduct.processOrder();
+      /*wywołanie thisProduct.initAmountWidget(); chyba powinno być przed wywołaniem processOrder*/
+      thisProduct.initAmountWidget();
 
       console.log('new Product:', thisProduct);
     }
@@ -112,6 +115,7 @@
       });
   
     }
+
     initOrderForm(){
       const thisProduct = this;
       /*conslole.log(initOrderForm);*/
@@ -131,7 +135,6 @@
         thisProduct.processOrder();
       });
     }
-    initAmountWidget();
 
     processOrder() {
       const thisProduct = this;
@@ -140,6 +143,7 @@
       const formData = utils.serializeFormToObject(thisProduct.form);
       console.log('formData', formData);
       console.log('ProductData', thisProduct.data);    
+      
       // set price to default price
       let price = thisProduct.data.price;
     
@@ -164,25 +168,28 @@
           if(!formData[paramId].includes(optionId) && option.default) {
             price = price - option.price;
           } 
-          const optionImage = thisProduct.imageWrapper.querySelector('.paramId-optionId');
+          const optionImage = thisProduct.imageWrapper.querySelector('.' + paramId + '-' + optionId); 
           if (optionImage != null){
             if (optionSelected){
-              optionImage.classList.add('classNames.menuProduct.imageVisible');
+              optionImage.classList.add(classNames.menuProduct.imageVisible);
             }
             else {
-              optionImage.classList.add('classNames.menuProduct.imageVisible');
+              optionImage.classList.remove(classNames.menuProduct.imageVisible);
             }
           }
         }
       }
     
+      /* multiply price by amount */
+      price *= thisProduct.amountWidget.value;
       // update calculated price in the HTML
       thisProduct.priceElem.innerHTML = price;
     }
     initAmountWidget(){
       const thisProduct = this;
 
-      thisProduct.amountWidget = newAmountWidget(thisProduct.amountWidgetElem);
+      thisProduct.amountWidget = new AmountWidget(thisProduct.amountWidgetElem);
+      thisProduct.amountWidgetElem.addEventListener('updated'; thisProduct.processOrder());
     }
   }
   class AmountWidget{
@@ -193,6 +200,7 @@
       console.log('constructor arguments:', element);
       thisWidget.getElements(element);
       thisWidget.setValue(thisWidget.input.value);
+      thisWidget.initActions();
     }
     getElements(element){
       const thisWidget = this;
@@ -209,18 +217,37 @@
       if(thisWidget.value !== newValue  && !isNaN(newValue)) {
         thisWidget.value = newValue;
       }
+      if(thisWidget.value < settings.amountWidget.defaultMin){
+        thisWidget.value = settings.amountWidget.defaultMin;
+      }
+      if(thisWidget.value > settings.amountWidget.defaultMax){
+        thisWidget.value = settings.amountWidget.defaultMax;
+      }
 
       thisWidget.input.value = thisWidget.value;
+      this.announce();
 
     }
     initActions(){
-      thisWidget.input.addEventListener('change', setValue(value));
+      const thisWidget = this;
+
+      thisWidget.input.addEventListener('change', function() { 
+        thisWidget.setValue(thisWidget.input.value);
+      });
       thisWidget.linkDecrease.addEventListener('click', function(event){
         event.preventDefault();
-        const decreasedValue -= thisWidget.value;
-        const increasedValue += thisWidget.value;
+        thisWidget.setValue(thisWidget.value - 1);
+      });
+      thisWidget.linkIncrease.addEventListener('click', function(event){
+        event.preventDefault();
+        thisWidget.setValue(thisWidget.value + 1);
+      });
+    }
+    announce(){
+      const thisWidget = this;
 
-      })
+      const event = new Event ('updated');
+      thisWidget.elementlement.dispatchEvent(event);
     }
   }
   const app = {
