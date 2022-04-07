@@ -42,7 +42,7 @@
 
   const settings = {
     amountWidget: {
-      defaultValue: 1,
+      defaultValue: 6,
       defaultMin: 1,
       defaultMax: 9,
     }
@@ -63,9 +63,9 @@
       thisProduct.getElements();
       thisProduct.initAccordion();
       thisProduct.initOrderForm();
-      thisProduct.processOrder();
-      /*wywołanie thisProduct.initAmountWidget(); chyba powinno być przed wywołaniem processOrder*/
       thisProduct.initAmountWidget();
+      thisProduct.processOrder();
+     
 
       console.log('new Product:', thisProduct);
     }
@@ -189,7 +189,7 @@
       const thisProduct = this;
 
       thisProduct.amountWidget = new AmountWidget(thisProduct.amountWidgetElem);
-      thisProduct.amountWidgetElem.addEventListener('updated'; thisProduct.processOrder());
+      thisProduct.amountWidgetElem.addEventListener('updated', thisProduct.processOrder());
     }
   }
   class AmountWidget{
@@ -247,7 +247,7 @@
       const thisWidget = this;
 
       const event = new Event ('updated');
-      thisWidget.elementlement.dispatchEvent(event);
+      thisWidget.element.dispatchEvent(event);
     }
   }
   const app = {
