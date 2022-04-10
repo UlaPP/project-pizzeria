@@ -252,7 +252,8 @@
           thisWidget.value = newValue;
         }   
       }
-
+      thisWidget.input.value = thisWidget.value;
+      this.announce();
     }
     initActions(){
       const thisWidget = this;
