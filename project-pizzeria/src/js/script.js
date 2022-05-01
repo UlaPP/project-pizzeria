@@ -363,6 +363,39 @@
       const generatedDOM = utils.createDOMFromHTML(generateHTML); //'<div>...</div>'-> <div>...</div>
 
       thisCart.dom.productList.appendChild(generatedDOM);
+      new cartProduct(menuProduct, generatedDOM);
+      console.log('thisCart.products', thisCart.products);
+
+    }
+  }
+  class cartProduct{
+    constructor(menuProduct, element){
+    const thisCartProduct = this;
+    thisCartProduct.id = menuProduct.id;
+    ///Następnie postaraj się zapisać w nim wszystkie właściwości z argumentu menuProduct. Przypisz je do pojedynczych właściwości, np. ????
+    // ??????
+    thisCartProduct.getElements(element);
+    thisCartProduct.initAmountWidget();``
+    console.log('thisCartProduct', thisCartProduct);
+    }
+    
+    getElements(element){
+      thisCartProduct = this;
+      thisCartProduct.dom = {};
+      thisCartProduct.dom.wrapper = element;
+      thisCartProduct.dom.amountWidget = thisCartProduct.querySelector(select.cartProduct.amountWidget);
+      thisCartProduct.dom.price = thisCartProduct.querySelector(select.cartProduct.price);
+      thisCartProduct.dom.edit = thisCartProduct.querySelector(select.cartProduct.edit);
+      thisCartProduct.dom.remove = thisCartProduct.querySelector(select.cartProduct.remove); 
+    }
+    /*na wzór
+    initAmountWidget(){
+      const thisProduct = this;
+
+      thisCartProduct.amountWidget = new AmountWidget(thisCartProduct.amountWidgetElem);
+      thisCartProduct.amountWidgetElem.addEventListener('updated', function() {
+        thisCartProduct.processOrder();
+      });*/
     }
   }
   const app = {
