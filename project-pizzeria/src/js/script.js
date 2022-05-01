@@ -208,7 +208,8 @@
       /* multiply price by amount */
       thisProduct.priceSingle = price;
       price *= thisProduct.amountWidget.value;
-      
+      thisProduct.price = price;
+
       // update calculated price in the HTML
       thisProduct.priceElem.innerHTML = price;
     }
@@ -233,11 +234,12 @@
         amount: thisProduct.amountWidget.value,
         priceSingle: thisProduct.priceSingle,
         price: thisProduct.price,
-        params: thisProduct.prepareCartProductParams     
+        params: thisProduct.prepareCartProductParams()   
       };
 
       return productSummary;
     }
+
     prepareCartProductParams() {
       const thisProduct = this;
     
@@ -355,26 +357,12 @@
     add(menuProduct){
       const thisCart = this;
       console.log('adding product', menuProduct);
-      /* metoda Cart.add ma być wzorowana na renderInMenu(){
-      const thisProduct = this;
-        generate HTML based on template
-      const generateHTML = templates.menuProduct(thisProduct.data);
-        create element using utils.createElementFromHTML
-      thisProduct.element = utils.createDOMFromHTML(generateHTML);
-        find menu container
-      const menuContainer = document.querySelector(select.containerOf.menu);
-        add element to menu
-      menuContainer.appendChild(thisProduct.element);
-    }
-    */
 
-      //generate HTML based on template
-      const generateHTML = templates.cartProduct(menuProduct);
-      const generatedDOM = 
+      // generate HTML based on template
+      const generateHTML = templates.cartProduct(menuProduct); //'<div>...</div>'
+      const generatedDOM = utils.createDOMFromHTML(generateHTML); //'<div>...</div>'-> <div>...</div>
 
-      /*Następnie ten kod zamień na element DOM i zapisz w następnej stałej – generatedDOM.
-        Dodaj ten element DOM do thisCart.dom.productList (użyj metody appendChild)*/
-
+      thisCart.dom.productList.appendChild(generatedDOM);
     }
   }
   const app = {
