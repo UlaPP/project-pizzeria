@@ -330,7 +330,9 @@
     announce(){
       const thisWidget = this;
 
-      const event = new Event ('updated');
+      const event = new CustomEvent('updated', {
+        bubbles: true
+      });
       thisWidget.element.dispatchEvent(event);
     }
   }
@@ -353,11 +355,23 @@
       thisCart.dom.wrapper = element;
       thisCart.dom.toggleTrigger = thisCart.dom.wrapper.querySelector(select.cart.toggleTrigger);
       thisCart.dom.productList = thisCart.dom.wrapper.querySelector(select.cart.productList);
+      thisCart.dom.deliveryFee = thisCart.dom.wrapper.querySelector(select.cart.deliveryFee);
+      thisCart.dom.subtotalPrice = thisCart.dom.wrapper.querySelector(select.cart.subtotalPrice);
+      thisCart.dom.totalPrice = thisCart.dom.wrapper.querySelectorAll(select.cart.totalPrice);
+      thisCart.dom.totalNumber = thisCart.dom.wrapper.querySelector(select.cart.totalNumber);
     }
     initActions(){
       const thisCart = this;
       thisCart.dom.toggleTrigger.addEventListener('click', function(){
         thisCart.dom.wrapper.classList.toggle(classNames.cart.wrapperActive);
+      });
+
+      thisCart.dom.productList.addEventListener('updated', function() {
+        console.log('test');
+        thisCart.update();
+      });
+      thisCart.dom.productList.addEventListener('removed', function() {
+        thisCart.remove(event.detail.cartProduct);
       });
     }
     add(menuProduct){
@@ -372,7 +386,49 @@
       thisCart.products.push(new cartProduct(menuProduct, generatedDOM));
       console.log('thisCart.products', thisCart.products);
 
+      thisCart.update();
     }
+
+    update() {
+      const thisCart = this;
+
+      thisCart.totalNumber = 0;
+      thisCart.subtotalPrice = 0;
+      thisCart.totalPrice = 0;
+      thisCart.deliveryFee = 0;
+
+      for(const product of thisCart.products) {
+        thisCart.totalNumber = thisCart.totalNumber + product.amount;
+        thisCart.subtotalPrice = thisCart.subtotalPrice + product.price;
+      }
+
+      if(thisCart.totalNumber > 0) {
+        thisCart.deliveryFee = settings.cart.defaultDeliveryFee;
+        thisCart.totalPrice = thisCart.subtotalPrice + thisCart.deliveryFee;
+      }
+
+      thisCart.dom.deliveryFee.innerHTML = thisCart.deliveryFee;
+      thisCart.dom.totalNumber.innerHTML = thisCart.totalNumber;
+      thisCart.dom.subtotalPrice.innerHTML = thisCart.subtotalPrice;
+
+      for(const elem of thisCart.dom.totalPrice) {
+        elem.innerHTML = thisCart.totalPrice;
+      }
+  
+
+    }
+    remove(cartProductToRemove) {
+      const thisCart = this;
+
+      //Usunięcie informacji o danym produkcie z tablicy thisCart.products.
+      //const indexOfCartProductToRemove = thisCart.products.indexOf(cartProductToRemove);
+      //thisCart.products.splice(indexOfCartProductToRemove, 1);
+
+      //Usunięcie reprezentacji produktu z HTML-a,
+      //cartProductToRemove.dom.wrapper.remove();
+      thisCart.update();
+    }
+
   }
   class cartProduct{
     constructor(menuProduct, element){
@@ -387,6 +443,7 @@
 
       thisCartProduct.getElements(element);
       thisCartProduct.initAmountWidget();
+      thisCartProduct.initActions();
       console.log('thisCartProduct', thisCartProduct);
     }
     
@@ -408,6 +465,27 @@
         thisCartProduct.amount = thisCartProduct.amountWidget.value;
         thisCartProduct.price = thisCartProduct.priceSingle * thisCartProduct.amount;
         thisCartProduct.dom.price.innerHTML = thisCartProduct.price;
+      });
+    }
+    remove(){
+      const thisCartProduct = this;
+
+      const event = new CustomEvent('remove', {
+        bubbles: true,
+        detail:{
+          cartProduct: thisCartProduct,
+        },
+      });
+      thisCartProduct.dom.wrapper.dispatchEvent(event);
+    }
+    initActions(){
+      const thisCartProduct = this;
+      thisCartProduct.dom.edit.addEventListener('click', function(event){
+        event.preventDefault();
+      });
+      thisCartProduct.dom.remove.addEventListener('click', function(event){
+        event.preventDefault();
+        cartProduct.remove();
       });
     }
   }
