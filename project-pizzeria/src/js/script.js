@@ -375,7 +375,7 @@
         console.log('test');
         thisCart.update();
       });
-      thisCart.dom.productList.addEventListener('removed', function() {
+      thisCart.dom.productList.addEventListener('remove', function(event) {
         thisCart.remove(event.detail.cartProduct);
       });
     }
@@ -490,7 +490,7 @@
       });
       thisCartProduct.dom.remove.addEventListener('click', function(event){
         event.preventDefault();
-        cartProduct.remove();
+        thisCartProduct.remove();
       });
     }
   }
@@ -527,12 +527,10 @@
         })
         .then(function(parsedResponse){
           console.log('parsedResponse', parsedResponse);
-          /* save parsedResponse as thisApp.data.products 
-        ?????*/
-          /* execute initMenu method 
-        thisApp.initMenu();
-        */
-
+          /* save parsedResponse as thisApp.data.products */
+          thisApp.data.products = parsedResponse;
+          /* execute initMenu method  */
+          thisApp.initMenu();
         });
       console.log('thisApp.data', JSON.stringify(thisApp.data));
     },
