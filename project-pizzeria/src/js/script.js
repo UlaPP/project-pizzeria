@@ -422,15 +422,17 @@
   
 
     }
-    remove(/*cartProductToRemove*/) {
+    remove(cartProductToRemove) {
       const thisCart = this;
 
-      //Usunięcie informacji o danym produkcie z tablicy thisCart.products.
-      //const indexOfCartProductToRemove = thisCart.products.indexOf(cartProductToRemove);
-      //thisCart.products.splice(indexOfCartProductToRemove, 1);
-
       //Usunięcie reprezentacji produktu z HTML-a,
-      //cartProductToRemove.dom.wrapper.remove();
+      cartProductToRemove.dom.wrapper.remove();
+
+      //Usunięcie informacji o danym produkcie z tablicy thisCart.products.
+      const indexOfCartProductToRemove = thisCart.products.indexOf(cartProductToRemove);
+      thisCart.products.splice(indexOfCartProductToRemove, 1);
+
+      // Zakutlizowac ogolne informacje o koszyku.
       thisCart.update();
     }
 
