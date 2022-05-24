@@ -364,6 +364,9 @@
       thisCart.dom.subtotalPrice = thisCart.dom.wrapper.querySelector(select.cart.subtotalPrice);
       thisCart.dom.totalPrice = thisCart.dom.wrapper.querySelectorAll(select.cart.totalPrice);
       thisCart.dom.totalNumber = thisCart.dom.wrapper.querySelector(select.cart.totalNumber);
+      thisCart.dom.form = thisCart.dom.wrapper.querySelector(select.cart.form);
+      thisCart.dom.address = thisCart.dom.wrapper.querySelector(select.cart.address);
+      thisCart.dom.phone = thisCart.dom.wrapper.querySelector(select.cart.phone);
     }
     initActions(){
       const thisCart = this;
@@ -377,6 +380,11 @@
       });
       thisCart.dom.productList.addEventListener('remove', function(event) {
         thisCart.remove(event.detail.cartProduct);
+      });
+
+      thisCart.dom.form.addEventListener('submit', function(event){
+        event.preventDefault();
+        thisCart.sendOrder();
       });
     }
     add(menuProduct){
@@ -434,6 +442,36 @@
 
       // Zakutlizowac ogolne informacje o koszyku.
       thisCart.update();
+    }
+
+    sendOrder() {
+      const thisCart = this;
+
+      /*
+      address,
+      phone
+      totalPrice,
+      produkty*/
+
+      const payload = {
+        address: thisCart.dom.address.value,
+        phone: thisCart.dom.phone.value,
+        totalPrice: thisCart.totalPrice,
+        products: []
+      };
+
+      for(const product of thisCart.products) {
+        payload.products.push(product.getData());
+      }
+
+      const url = settings.db.url + '/' + settings.db.orders; //http://localhost:3131/orders
+      fetch(url, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(payload),
+      });
     }
 
   }
@@ -495,6 +533,20 @@
         thisCartProduct.remove();
       });
     }
+
+    getData(){
+      const thisCartProduct = this;
+
+      const cartProductSummary = {
+        id: thisCartProduct.id,
+        amount: thisCartProduct.amount,
+        name:  thisCartProduct.name,
+        params: thisCartProduct.params,
+      };
+
+      return cartProductSummary;
+    }
+
   }
 
   const app = {
